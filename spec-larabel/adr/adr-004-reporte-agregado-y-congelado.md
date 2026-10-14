@@ -1,13 +1,8 @@
-# ADR-004 · El reporte se calcula en el motor y agrupa por valores congelados
+# ADR-004 · The report is aggregated by frozen values
 
-- **Estado:** aceptada
-- **Contexto:** el reporte de más prestados (HU-10) cruza `loan` y `loan_item` sobre un rango. Si leyera el título o la categoría del catálogo
-  vivo, renombrar un libro o una categoría cambiaría un reporte de un periodo ya cerrado.
-- **Decisión:** (1) el reporte **no se persiste**: se calcula con una sola consulta agregada por un puerto de lectura. (2) Agrupa por
-  `book_id, book_title, category_name` **tal como quedaron congelados en la línea**. (3) `loan_item.category_name` **no tiene FK**
-  a propósito. (4) Si un libro cambió de categoría dentro del rango, el reporte muestra **dos filas**: no elige un ganador.
-- **Alternativas descartadas:** unir con el catálogo vivo (el reporte deja de ser estable); tomar «el valor más reciente del rango»
-  (un préstamo nuevo cambiaría lo ya leído); materializar una tabla de reporte (segunda fuente de verdad).
-- **Consecuencias:** CA-10.1 dice «una fila por libro y nombre de categoría congelado», no «una fila por libro». El reporte no
-  incluye socios ni bibliotecarios (privacidad).
-- **Cómo se verifica:** prestar un libro, renombrarlo, pedir el reporte del mismo rango: el título del reporte es el viejo.
+- **Status:** accepted
+- **Context:** the most-borrowed report (HU-10) joins `loan` and `loan_item` over a range. If it read the title or category from the live catalog, renaming a book or category would change a report for a closed period.
+- **Decision:** (1) the report is **not persisted**: it is calculated by one aggregate query through a read port. (2) It groups by `book_id, book_title, category_name` **as frozen in the line**. (3) `loan_item.category_name` intentionally has **no FK**. (4) If a book changes category within the range, the report shows **two rows**; it does not choose a winner.
+- **Rejected alternatives:** joining the live catalog (the report stops being stable); taking “the most recent value in the range” (a new loan would change what was already read); materializing a report table (second source of truth).
+- **Consequences:** CA-10.1 says “one row per book and frozen category name”, not “one row per book”. The report contains no members or librarians (privacy).
+- **Verification:** lend a book, rename it and request a report for the same range: the report title is the old title.
